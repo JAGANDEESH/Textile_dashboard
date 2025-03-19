@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Search } from 'lucide-react';
 
 export default function Navbar() {
   return (
@@ -8,6 +8,16 @@ export default function Navbar() {
         <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
         
         <div className="flex items-center gap-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <button className="flex items-center gap-2 text-gray-600 hover:text-gray-900">
             <User className="h-5 w-5" />
             <span>Profile</span>
