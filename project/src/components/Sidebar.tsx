@@ -45,7 +45,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
   const navItems: NavItem[] = [
     { icon: Home, label: "Home", href: "#" },
     { icon: LayoutDashboard, label: "Dashboard", href: "#", target: "_blank" },
-    { icon: DollarSign, label: "Financial Accounts", href: "#", target: "_blank" },
+    { icon: DollarSign, label: "Financial Accounts", href: "/FA", target: "_blank" },
+
     { icon: Package, label: "Raw Material", href: "#", target: "_blank" },
     { icon: Truck, label: "Domestic Sale", href: "#", target: "_blank" },
     { icon: Warehouse, label: "Stores Management", href: "#", target: "_blank" },

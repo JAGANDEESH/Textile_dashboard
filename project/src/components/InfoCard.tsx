@@ -17,7 +17,7 @@ export default function InfoCard({ title, description, icon: Icon, color }: Info
       </div>
       
       {/* Title with Hover Effect */}
-      <a href="#" className="text-lg font-semibold mb-2 block text-gray-900 hover:text-blue-600 transition-colors">
+      <a href="/FA" className="text-lg font-semibold mb-2 block text-gray-900 hover:text-blue-600 transition-colors"target = "_blank">
         {title}
       </a>
       
