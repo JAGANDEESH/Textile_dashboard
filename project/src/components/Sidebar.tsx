@@ -21,6 +21,7 @@ import {
 interface SubMenuItem {
   label: string;
   href: string;
+  target?: string; // Added target
   subItems?: SubMenuItem[];
 }
 
@@ -28,6 +29,7 @@ interface NavItem {
   icon: React.ElementType;
   label: string;
   href?: string;
+  target?: string; // Added target
   subItems?: SubMenuItem[];
 }
 
@@ -42,58 +44,17 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   const navItems: NavItem[] = [
     { icon: Home, label: "Home", href: "#" },
-    { icon: LayoutDashboard, label: "Dashboard", href: "#" },
-    { icon: DollarSign, label: "Financial Accounts", subItems: [
-        { label: "Masters", href: "#", subItems: [
-            { label: "Ac Group", href: "#" },
-            { label: "Ac Master", href: "#" },
-          ]},
-        { label: "Transaction", href: "#", subItems: [
-            { label: "Cash Payment", href: "#" },
-            { label: "Cash Receipt", href: "#" },
-            { label: "Bank Payment", href: "#" },
-            { label: "Bank Receipt", href: "#" },
-            { label: "Journal", href: "#" },
-          ]},
-        { label: "View", href: "#" },
-        { label: "Reports", href: "#" },
-        { label: "Setting", href: "#" },
-      ]},
-    { icon: Package, label: "Raw Material", subItems: [
-        { label: "Company Profile", href: "#", subItems: [
-            { label: "Company Details", href: "#" },
-            { label: "Branch Management", href: "#" },
-          ]},
-        { label: "Employee", href: "#" },
-        { label: "Customer", href: "#" },
-        { label: "Supplier", href: "#" },
-        { label: "Department", href: "#" },
-      ]},
-    { icon: Truck, label: "Domestic Sale", subItems: [
-        { label: "Purchase Order", href: "#", subItems: [
-            { label: "Local Purchase", href: "#" },
-            { label: "International Purchase", href: "#" },
-          ]},
-        { label: "Purchase Invoice", href: "#" },
-        { label: "Purchase Return", href: "#" },
-      ]},
-    { icon: Warehouse, label: "Stores Management", subItems: [
-        { label: "Inventory", href: "#" },
-        { label: "Stock Movement", href: "#" },
-      ]},
-    { icon: Briefcase, label: "Payroll", subItems: [
-        { label: "Employee Salary", href: "#" },
-        { label: "Attendance Tracking", href: "#" },
-      ]},
-    { icon: Settings, label: "Configuration", subItems: [
-        { label: "System Settings", href: "#" },
-        { label: "User Management", href: "#" },
-      ]},
-    { icon: ShieldCheck, label: "Administration", subItems: [
-        { label: "Roles & Permissions", href: "#" },
-        { label: "Audit Logs", href: "#" },
-      ]},
-  ];
+    { icon: LayoutDashboard, label: "Dashboard", href: "#", target: "_blank" },
+    { icon: DollarSign, label: "Financial Accounts", href: "#", target: "_blank" },
+    { icon: Package, label: "Raw Material", href: "#", target: "_blank" },
+    { icon: Truck, label: "Domestic Sale", href: "#", target: "_blank" },
+    { icon: Warehouse, label: "Stores Management", href: "#", target: "_blank" },
+    {  icon: Briefcase, label: "Payroll", href: "#", target: "_blank" },
+    {  icon: Settings, label: "Configuration", href: "#", target: "_blank" },
+    {   icon: ShieldCheck, label: "Administration", href: "#", target: "_blank" },
+      ];
+  
+
 
   const renderMenuItems = (items: NavItem[] | SubMenuItem[], parentLabel: string = "") => {
     return items.map((item) => {
@@ -102,22 +63,31 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
       return (
         <div key={itemKey}>
-          <button
-            onClick={() => item.subItems && toggleExpand(itemKey)}
-            className={`w-full flex items-center gap-3 px-2 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors ${
-              isExpanded ? "bg-gray-800" : ""
-            }`}
-          >
-            {item.icon && <item.icon className="h-5 w-5" />}
-            {isSidebarOpen && <span>{item.label}</span>}
-            {item.subItems && isSidebarOpen && (
-              <ChevronDown
-                className={`h-4 w-4 ml-auto transition-transform ${
-                  isExpanded ? "rotate-180" : ""
-                }`}
-              />
-            )}
-          </button>
+          {item.href ? (
+            <a
+              href={item.href}
+              target={item.target || "_self"}
+              className="w-full flex items-center gap-3 px-2 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              {item.icon && <item.icon className="h-5 w-5" />}
+              {isSidebarOpen && <span>{item.label}</span>}
+            </a>
+          ) : (
+            <button
+              onClick={() => item.subItems && toggleExpand(itemKey)}
+              className={`w-full flex items-center gap-3 px-2 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors ${
+                isExpanded ? "bg-gray-800" : ""
+              }`}
+            >
+              {item.icon && <item.icon className="h-5 w-5" />}
+              {isSidebarOpen && <span>{item.label}</span>}
+              {item.subItems && isSidebarOpen && (
+                <ChevronDown
+                  className={`h-4 w-4 ml-auto transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                />
+              )}
+            </button>
+          )}
           {item.subItems && isExpanded && isSidebarOpen && (
             <div className="ml-4 pl-4 border-l border-gray-700">
               {renderMenuItems(item.subItems, itemKey)}
@@ -130,9 +100,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen }) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen ${
-        isSidebarOpen ? "w-64" : "w-16"
-      } bg-gray-900 text-white p-4 transition-all duration-300`}
+      className={`fixed left-0 top-0 h-screen ${isSidebarOpen ? "w-64" : "w-16"} bg-gray-900 text-white p-4 transition-all duration-300`}
     >
       <button
         className="flex items-center gap-2 text-gray-300 hover:text-white mb-6"
