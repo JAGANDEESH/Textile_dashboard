@@ -1,5 +1,5 @@
 import React from 'react';
-import { DivideIcon as LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 
 interface InfoCardProps {
   title: string;
@@ -10,12 +10,21 @@ interface InfoCardProps {
 
 export default function InfoCard({ title, description, icon: Icon, color }: InfoCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className={`inline-block p-3 rounded-lg ${color} mb-4`}>
-        <Icon className="h-6 w-6 text-white" />
+    <div className="bg-white rounded-2xl shadow-md p-6 border border-gray-200 transition-all hover:shadow-xl hover:scale-105 duration-300 flex flex-col items-center text-center">
+      {/* Icon with Background */}
+      <div className={`flex items-center justify-center p-3 rounded-xl ${color} mb-4 shadow-md`}>
+        <Icon className="h-7 w-7 text-white" />
       </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
+      
+      {/* Title with Hover Effect */}
+      <a href="#" className="text-lg font-semibold mb-2 block text-gray-900 hover:text-blue-600 transition-colors">
+        {title}
+      </a>
+      
+      {/* Description */}
+      <p className="text-gray-600 text-sm leading-relaxed">
+        {description}
+      </p>
     </div>
   );
 }
