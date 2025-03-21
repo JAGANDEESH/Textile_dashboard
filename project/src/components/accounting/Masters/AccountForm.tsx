@@ -36,16 +36,16 @@ export default function AccountForm() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  const handleGroupChange = (selectedOption) => {
+  const handleGroupChange = (selectedOption: React.SetStateAction<null>) => {
     setSelectedGroup(selectedOption);
     setSelectedSubGroup(null);
   };
 
-  const handleSubGroupChange = (selectedOption) => {
+  const handleSubGroupChange = (selectedOption: React.SetStateAction<null>) => {
     setSelectedSubGroup(selectedOption);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     console.log("Submitted Data:", {
       AccountGroup: selectedGroup,
@@ -71,7 +71,7 @@ export default function AccountForm() {
 
   // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: { target: unknown; }) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setMenuOpen(false);
       }
@@ -89,7 +89,7 @@ export default function AccountForm() {
     >
       <div className="bg-white/10 backdrop-blur-md shadow-lg p-8 rounded-2xl max-w-md w-full border border-gray-200/50 relative">
         {/* 3-dot Toggle Menu */}
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4"> 
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="p-2 rounded-full hover:bg-gray-200 transition duration-200"
@@ -179,12 +179,16 @@ export default function AccountForm() {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-blue-700 transition duration-200 shadow-md"
-          >
-            Submit 🚀
-          </button>
+          <div className="flex justify-center">
+  <button
+    type="submit"
+    className="px-4 bg-blue-600 text-white py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-200 shadow transform hover:scale-105 active:scale-95"
+  >
+    Save
+  </button>
+</div>
+
+
         </form>
       </div>
     </motion.div>

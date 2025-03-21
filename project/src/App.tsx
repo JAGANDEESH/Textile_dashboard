@@ -24,6 +24,7 @@ export default function App() {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
   return (
+    
     <Router>
       <Routes>
         {/* FA Page loads independently */}
