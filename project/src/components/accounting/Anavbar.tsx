@@ -18,7 +18,7 @@ function Anavbar({ toggleSidebar }: { toggleSidebar: () => void }) {
       </h1>
 
       {/* Year Dropdown */}
-      <div className="relative">
+      {/* <div className="relative">
         <select
           className="px-3 py-2 bg-gray-50 border border-gray-300 text-gray-700 rounded-lg text-sm focus:ring-blue-400 focus:border-blue-400 transition"
           value={selectedYear}
@@ -30,7 +30,7 @@ function Anavbar({ toggleSidebar }: { toggleSidebar: () => void }) {
             </option>
           ))}
         </select>
-      </div>
+      </div> */}
 
       {/* Search Bar */}
       <div className="relative max-w-md mx-6 flex-grow">
