@@ -1,228 +1,127 @@
-import React, { useState, useEffect, useRef } from "react";
-import Select from "react-select";
-import { motion } from "framer-motion";
-import { MoreVertical } from "lucide-react"; // Import icon
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Search, Filter, ChevronDown } from "lucide-react";
 
-// Sample JSON data (Replace this with an actual JSON fetch)
-const accountsData = [
-  { id: 1, group: "Assets", subGroup: "Cash", shortName: "CASH" },
-  { id: 2, group: "Liabilities", subGroup: "Loans", shortName: "LOAN" },
-  { id: 3, group: "Income", subGroup: "Sales", shortName: "SALES" },
+interface Account {
+  group: string;
+  subGroup: string;
+  shortName: string;
+}
+
+const dummyData: Account[] = [
+  { group: "Assets", subGroup: "Cash", shortName: "CASH" },
+  { group: "Assets", subGroup: "Accounts Receivable", shortName: "AR" },
+  { group: "Liabilities", subGroup: "Loans", shortName: "LOAN" },
+  { group: "Liabilities", subGroup: "Accounts Payable", shortName: "AP" },
+  { group: "Income", subGroup: "Sales", shortName: "SALES" },
+  { group: "Income", subGroup: "Interest", shortName: "INT" },
+  { group: "Expenses", subGroup: "Salary", shortName: "SAL" },
+  { group: "Expenses", subGroup: "Rent", shortName: "RENT" },
 ];
 
-export default function AccountForm() {
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [selectedSubGroup, setSelectedSubGroup] = useState(null);
-  const [accountShortName, setAccountShortName] = useState("");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [accounts, setAccounts] = useState([]);
-  const menuRef = useRef(null);
+const groupColors: Record<string, string> = {
+  Assets: "bg-emerald-100 text-emerald-800",
+  Liabilities: "bg-red-100 text-red-800",
+  Income: "bg-blue-100 text-blue-800",
+  Expenses: "bg-amber-100 text-amber-800",
+};
 
-  useEffect(() => {
-    // Simulate fetching data from JSON
-    setAccounts(accountsData);
-  }, []);
+export default function Edit() {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedGroup, setSelectedGroup] = useState<string>("");
 
-  const handleGroupChange = (selectedOption) => {
-    setSelectedGroup(selectedOption);
-    setSelectedSubGroup(null);
+  const accountGroups: string[] = ["All", "Assets", "Liabilities", "Income", "Expenses"];
+
+  const filteredData = dummyData.filter((item) => {
+    return (
+      (selectedGroup === "All" || selectedGroup === "" || item.group === selectedGroup) &&
+      (item.group.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.subGroup.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.shortName.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  });
+
+  const handleEdit = (item: Account) => {
+    navigate(`/edit-form`, { state: { item } });
   };
-
-  const handleSubGroupChange = (selectedOption) => {
-    setSelectedSubGroup(selectedOption);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted Data:", {
-      AccountGroup: selectedGroup,
-      AccountSubGroup: selectedSubGroup,
-      AccountShortName: accountShortName,
-    });
-  };
-
-  const handleEdit = () => {
-    setEditMode(true);
-    setMenuOpen(false);
-  };
-
-  const handleDelete = () => {
-    alert("Delete function triggered!");
-    setMenuOpen(false);
-  };
-
-  const handleView = () => {
-    alert("View function triggered!");
-    setMenuOpen(false);
-  };
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen flex items-center justify-center bg-gray-100 p-6"
-    >
-      <div className="bg-white/10 backdrop-blur-md shadow-lg p-8 rounded-2xl max-w-xl w-full border border-gray-200/50 relative">
-        {/* 3-dot Toggle Menu */}
-        <div className="absolute top-4 right-4">
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="p-2 rounded-full hover:bg-gray-200 transition duration-200"
-          >
-            <MoreVertical size={24} />
-          </button>
-          {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.2 }}
-              ref={menuRef}
-              className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-10 border border-gray-200"
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <h2 className="text-2xl font-bold text-gray-900">Account</h2>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="flex-1 relative">
+            <Search className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search accounts..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition"
+            />
+          </div>
+          <div className="relative">
+            <Filter className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+              className="pl-8 pr-8 py-2 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition bg-white appearance-none w-44"
             >
-              <ul className="py-2 text-gray-800">
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleEdit}
-                >
-                  ✏️ Edit
-                </li>
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleDelete}
-                >
-                  🗑️ Delete
-                </li>
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleView}
-                >
-                  👀 View
-                </li>
-              </ul>
-            </motion.div>
-          )}
+              {accountGroups.map((group) => (
+                <option key={group} value={group}>
+                  {group}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+          </div>
         </div>
 
-        {/* Edit Mode: Display Table */}
-        {editMode ? (
-          <div>
-            <h2 className="text-2xl font-semibold text-gray-900 text-center mb-4">
-              📝 Edit Accounts
-            </h2>
-            <table className="w-full border-collapse border border-gray-300 shadow-md">
-              <thead className="bg-gray-200">
-                <tr>
-                  <th className="border p-2">Account Group</th>
-                  <th className="border p-2">Sub Group</th>
-                  <th className="border p-2">Short Name</th>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sub Group</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Short Name</th>
                 </tr>
               </thead>
-              <tbody>
-                {accounts.map((account, index) => (
-                  <tr key={index} className="text-center">
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        value={account.group}
-                        onChange={(e) => {
-                          const newAccounts = [...accounts];
-                          newAccounts[index].group = e.target.value;
-                          setAccounts(newAccounts);
-                        }}
-                        className="w-full border border-gray-300 rounded p-1 text-center"
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        value={account.subGroup}
-                        onChange={(e) => {
-                          const newAccounts = [...accounts];
-                          newAccounts[index].subGroup = e.target.value;
-                          setAccounts(newAccounts);
-                        }}
-                        className="w-full border border-gray-300 rounded p-1 text-center"
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="text"
-                        value={account.shortName}
-                        onChange={(e) => {
-                          const newAccounts = [...accounts];
-                          newAccounts[index].shortName = e.target.value;
-                          setAccounts(newAccounts);
-                        }}
-                        className="w-full border border-gray-300 rounded p-1 text-center"
-                      />
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-gray-200">
+                {filteredData.length > 0 ? (
+                  filteredData.map((item, index) => (
+                    <tr
+                      key={index}
+                      className="group hover:bg-gray-50 transition-colors duration-150 cursor-pointer"
+                      onClick={() => handleEdit(item)}
+                    >
+                      <td className="px-4 py-2.5 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${groupColors[item.group]}`}>
+                          {item.group}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <span className="text-sm text-gray-900">{item.subGroup}</span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <code className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono text-gray-800">{item.shortName}</code>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan={3} className="px-4 py-8 text-center text-gray-500">No matching records found</td></tr>
+                )}
               </tbody>
             </table>
-            <button
-              onClick={() => setEditMode(false)}
-              className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg font-medium hover:bg-green-700 transition duration-200"
-            >
-              ✅ Save Changes
-            </button>
           </div>
-        ) : (
-          // Form Mode
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <h2 className="text-2xl font-semibold text-gray-900 text-center mb-6">
-              🏦 Account Form
-            </h2>
-            {/* Account Group */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Account Group
-              </label>
-              <Select
-                options={accountsData.map(({ group }) => ({
-                  value: group,
-                  label: group,
-                }))}
-                value={selectedGroup}
-                onChange={handleGroupChange}
-                placeholder="Select Account Group..."
-                isSearchable
-                className="rounded-md"
-              />
-            </div>
-            {/* Account Short Name */}
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Account Short Name
-              </label>
-              <input
-                type="text"
-                value={accountShortName}
-                onChange={(e) => setAccountShortName(e.target.value)}
-                placeholder="Enter Short Name"
-                className="w-full p-3 border border-gray-300 rounded-lg"
-                required
-              />
-            </div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-lg">
-              Submit 🚀
-            </button>
-          </form>
-        )}
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

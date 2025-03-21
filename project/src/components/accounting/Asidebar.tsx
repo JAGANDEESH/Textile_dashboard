@@ -1,60 +1,78 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Users, ArrowLeftRight, Eye, FileText, Home } from "lucide-react";
+import { Users, ArrowLeftRight, Eye, FileText, Home, ChevronDown, ChevronUp } from "lucide-react";
 
-function Asidebar({ isOpen }) {
-  const navigate = useNavigate(); // Use navigate hook
+function Asidebar({ isOpen, className = "" }) {
+  const navigate = useNavigate();
+  const [openSubmenu, setOpenSubmenu] = useState(null);
+
+  const toggleSubmenu = (index) => {
+    setOpenSubmenu(openSubmenu === index ? null : index);
+  };
 
   const menuItems = [
-    {
-      title: "Home",
-      icon: <Home size={20} />,
-      submenu: [],
-      onClick: () => navigate("/") // Navigate to Home
-    },
-    {
-      title: "Masters",
-      icon: <Users size={20} />,
-      submenu: ["AC Group", "AC Master"],
-      onClick: () => navigate("/Master") // ✅ FIXED: Proper onClick function
-    },
+    { title: "Home", icon: <Home size={20} />, onClick: () => navigate("/") },
+    { title: "Masters", icon: <Users size={20} />, 
+    submenu: [
+      { title: "AC Group", onClick: () => navigate("/AccountGroup") },
+      { title: "AC Ledges", onClick: () => navigate("/AccountLedges") },
+    ],},
     {
       title: "Transactions",
       icon: <ArrowLeftRight size={20} />,
-      submenu: ["Cash Payment", "Cash Receipt", "Bank Payment", "Bank Receipt"],
+      submenu: [
+        { title: "Cash ", onClick: () => navigate("/cash-book") },
+        { title: "Bank Book", onClick: () => navigate("/bank-book") },
+      ],
+     
     },
-    {
-      title: "View",
-      icon: <Eye size={20} />,
-      submenu: [],
-    },
+    { title: "View", icon: <Eye size={20} />, submenu: [] },
     {
       title: "Reports",
       icon: <FileText size={20} />,
-      submenu: ["Cash Book", "Bank Book", "Journal"],
+      
     },
   ];
 
   return (
-    <div className={`bg-gradient-to-b from-gray-900 to-gray-800 text-white h-screen fixed left-0 transition-all duration-300 ${isOpen ? "w-64" : "w-20"} shadow-xl overflow-y-auto`}>
+    <div
+      className={`bg-gray-900 text-white fixed left-0 top-16 h-[calc(100vh-4rem)] transition-all duration-300 shadow-lg
+        ${isOpen ? "w-64" : "w-20"} overflow-y-auto ${className}`}
+    >
       <div className="p-6 border-b border-gray-700/50">
-        <h1 className={`font-bold ${isOpen ? "text-xl" : "text-center text-sm"} bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent`}>
+        <h1 className={`font-bold ${isOpen ? "text-xl" : "text-center text-sm"} text-blue-400`}>
           {isOpen ? "Financial Account" : "AS"}
         </h1>
       </div>
 
-      {/* Sidebar Menu */}
       <nav className="mt-6">
         {menuItems.map((item, index) => (
           <div key={index} className="mb-2">
             <button
               className="w-full px-6 py-3.5 flex items-center justify-between hover:bg-white/10 transition-colors"
-              onClick={item.onClick} // ✅ FIXED: Corrected event handler
+              onClick={item.submenu ? () => toggleSubmenu(index) : item.onClick}
             >
               <div className="flex items-center">
                 <span className="mr-3 text-blue-400">{item.icon}</span>
                 {isOpen && <span className="text-gray-200">{item.title}</span>}
               </div>
+              {isOpen && item.submenu && (
+                openSubmenu === index ? <ChevronUp size={18} /> : <ChevronDown size={18} />
+              )}
             </button>
+            {isOpen && item.submenu && openSubmenu === index && (
+              <div className="pl-12 bg-gray-800">
+                {item.submenu.map((sub, subIndex) => (
+                  <button
+                    key={subIndex}
+                    className="w-full px-4 py-2 text-left text-gray-300 hover:bg-white/10 transition-colors"
+                    onClick={sub.onClick}
+                  >
+                    {sub.title}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </nav>

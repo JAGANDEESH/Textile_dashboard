@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import Select from "react-select";
 import { motion } from "framer-motion";
 import { MoreVertical } from "lucide-react"; // Import icon
+import { useNavigate } from "react-router-dom";
 
 const accountGroups = [
   { value: "assets", label: "Assets" },
@@ -10,7 +11,7 @@ const accountGroups = [
   { value: "expenses", label: "Expenses" },
 ];
 
-const accountSubGroups = {
+const accountSubGroups: Record<string, { value: string; label: string }[]> = {
   assets: [
     { value: "cash", label: "Cash" },
     { value: "accounts-receivable", label: "Accounts Receivable" },
@@ -29,23 +30,24 @@ const accountSubGroups = {
   ],
 };
 
-export default function AccountForm() {
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [selectedSubGroup, setSelectedSubGroup] = useState(null);
+export default function AccountGroup() {
+  const [selectedGroup, setSelectedGroup] = useState<{ value: string; label: string } | null>(null);
+  const [selectedSubGroup, setSelectedSubGroup] = useState<{ value: string; label: string } | null>(null);
   const [accountShortName, setAccountShortName] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
-  const handleGroupChange = (selectedOption: React.SetStateAction<null>) => {
+  const handleGroupChange = (selectedOption: { value: string; label: string } | null) => {
     setSelectedGroup(selectedOption);
     setSelectedSubGroup(null);
   };
 
-  const handleSubGroupChange = (selectedOption: React.SetStateAction<null>) => {
+  const handleSubGroupChange = (selectedOption: { value: string; label: string } | null) => {
     setSelectedSubGroup(selectedOption);
   };
 
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Submitted Data:", {
       AccountGroup: selectedGroup,
@@ -55,7 +57,7 @@ export default function AccountForm() {
   };
 
   const handleEdit = () => {
-    alert("Edit function triggered!");
+    navigate("/Edit");
     setMenuOpen(false);
   };
 
@@ -69,10 +71,9 @@ export default function AccountForm() {
     setMenuOpen(false);
   };
 
-  // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: { target: unknown; }) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setMenuOpen(false);
       }
     };
@@ -89,7 +90,7 @@ export default function AccountForm() {
     >
       <div className="bg-white/10 backdrop-blur-md shadow-lg p-8 rounded-2xl max-w-md w-full border border-gray-200/50 relative">
         {/* 3-dot Toggle Menu */}
-        <div className="absolute top-4 right-4"> 
+        <div className="absolute top-4 right-4">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="p-2 rounded-full hover:bg-gray-200 transition duration-200"
@@ -105,22 +106,13 @@ export default function AccountForm() {
               className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-md z-10 border border-gray-200"
             >
               <ul className="py-2 text-gray-800">
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleEdit}
-                >
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleEdit}>
                   ✏️ Edit
                 </li>
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleDelete}
-                >
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleDelete}>
                   🗑️ Delete
                 </li>
-                <li
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={handleView}
-                >
+                <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer" onClick={handleView}>
                   👀 View
                 </li>
               </ul>
@@ -131,12 +123,11 @@ export default function AccountForm() {
         <h2 className="text-2xl font-semibold text-gray-900 text-center mb-6">
           🏦 Account Form
         </h2>
+
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Account Group */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Account Group
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Account Group</label>
             <Select
               options={accountGroups}
               value={selectedGroup}
@@ -149,9 +140,7 @@ export default function AccountForm() {
 
           {/* Account Sub Group (Dynamic based on Account Group) */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Account Sub Group
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Account Sub Group</label>
             <Select
               options={selectedGroup ? accountSubGroups[selectedGroup.value] : []}
               value={selectedSubGroup}
@@ -165,9 +154,7 @@ export default function AccountForm() {
 
           {/* Account Short Name */}
           <div>
-            <label className="block text-gray-700 font-medium mb-1">
-              Account Short Name
-            </label>
+            <label className="block text-gray-700 font-medium mb-1">Account Short Name</label>
             <input
               type="text"
               value={accountShortName}
@@ -180,15 +167,13 @@ export default function AccountForm() {
 
           {/* Submit Button */}
           <div className="flex justify-center">
-  <button
-    type="submit"
-    className="px-4 bg-blue-600 text-white py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-200 shadow transform hover:scale-105 active:scale-95"
-  >
-    Save
-  </button>
-</div>
-
-
+            <button
+              type="submit"
+              className="px-4 bg-blue-600 text-white py-2 rounded-md text-base font-medium hover:bg-blue-700 transition duration-200 shadow transform hover:scale-105 active:scale-95"
+            >
+              Save
+            </button>
+          </div>
         </form>
       </div>
     </motion.div>

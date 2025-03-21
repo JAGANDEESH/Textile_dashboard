@@ -7,9 +7,12 @@ import Footer from "./components/Footer";
 import QuickAccess from "./components/QuickAccess";
 import LoadingPage from "./components/LoadingPage"; 
 import DelayedComponent from "./components/DelayedComponent"; 
-import AccountForm from "./components/accounting/Masters/AccountForm";
+
 import Anavbar from "./components/accounting/Anavbar";
 import Asidebar from "./components/accounting/Asidebar";
+import Edit from "./components/accounting/Masters/Edit";
+import EditFormPage from "./components/accounting/Masters/EditFormPage";  // ✅ Import EditFormPage
+import AccountGroup from "./components/accounting/Masters/AccountGroup";
 
 // Lazy-loaded components
 const Home = lazy(() => import("./components/Home"));
@@ -24,10 +27,9 @@ export default function App() {
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
 
   return (
-    
     <Router>
       <Routes>
-        {/* FA Page loads independently */}
+        {/* FA Page (Loads Independently) */}
         <Route
           path="/FA"
           element={
@@ -39,18 +41,58 @@ export default function App() {
           }
         />
 
-        {/* Master Page with Anavbar & Asidebar */}
+        {/* Edit Page (Fixed Navbar & Sidebar) */}
         <Route
-          path="/Master"
+          path="/Edit"
           element={
-            <div className="min-h-screen bg-gray-100 flex transition-all duration-300">
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
               <Asidebar isOpen={isSidebarOpen} />
-              
-              <div className="flex-1 transition-all duration-300 ml-64">
-              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-                <main className="pt-16 px-6">
-                  <AccountForm />
-                </main>
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <Edit />
+              </div>
+            </div>
+          }
+        />
+
+        {/* Edit Form Page (Fixed Navbar & Sidebar) */}
+        <Route
+          path="/edit-form"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <EditFormPage />
+              </div>
+            </div>
+          }
+        />
+
+        {/* Master Page (Fixed Navbar & Sidebar) */}
+        <Route
+          path="/AccountGroup"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <AccountGroup />
               </div>
             </div>
           }

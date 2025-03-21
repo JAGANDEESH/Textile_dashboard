@@ -5,7 +5,7 @@ import DashboardCards from "./DashboardCards";
 import RecentTransactions from "./RecentTransaction";
 import Asidebar from "./Asidebar";
 import Anavbar from "./Anavbar";
-import AccountForm from "./Masters/AccountForm";
+import AccountForm from "./Masters/AccountGroup";
 
 function Faapp() {
     const [sidebarOpen, setSidebarOpen] = useState(true);
