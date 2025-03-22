@@ -128,28 +128,29 @@ export default function Edit() {
         >
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-lg">
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Sub Group</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Group Name</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Short Name</th>
+              <thead className="sticky top-0 bg-blue-200 shadow-sm">
+                <tr className="text-lg font-semibold text-gray-900">
+                  <th className="px-6 py-4 text-left">Group Name</th>
+                  <th className="px-6 py-4 text-left">Parent</th>
+                  <th className="px-6 py-4 text-left">Short Name</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-300 text-lg">
                 {filteredData.length > 0 ? (
                   filteredData.map((item, index) => (
                     <motion.tr
                       key={index}
                       whileHover={{ scale: 1.02 }}
-                      className="group hover:bg-blue-50 transition-all duration-150 cursor-pointer text-lg"
+                      className="hover:bg-blue-100 transition-all duration-150 cursor-pointer"
                       onClick={() => handleEdit(item)}
                     >
-                      <td className="px-6 py-3 whitespace-nowrap text-gray-900">{item.subGroup}</td>
+        
                       <td className="px-6 py-3">
                         <span className={`inline-flex items-center px-4 py-1 rounded-full text-sm font-medium ${groupColors[item.group]}`}>
                           {item.group}
                         </span>
                       </td>
+                      <td className="px-6 py-3 whitespace-nowrap text-gray-900">{item.subGroup}</td>
                       <td className="px-6 py-3">
                         <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono text-gray-800">{item.shortName}</code>
                       </td>

@@ -13,6 +13,8 @@ import Asidebar from "./components/accounting/Asidebar";
 import Edit from "./components/accounting/Masters/Edit";
 import EditFormPage from "./components/accounting/Masters/EditFormPage";  // ✅ Import EditFormPage
 import AccountGroup from "./components/accounting/Masters/AccountGroup";
+import Delete from "./components/accounting/Masters/Delete";
+import View from "./components/accounting/Masters/View";
 
 // Lazy-loaded components
 const Home = lazy(() => import("./components/Home"));
@@ -74,6 +76,42 @@ export default function App() {
               {/* Main Content */}
               <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
                 <EditFormPage />
+              </div>
+            </div>
+          }
+        />
+
+<Route
+          path="/delete"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <Delete />
+              </div>
+            </div>
+          }
+        />
+
+<Route
+          path="/view"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <View />
               </div>
             </div>
           }

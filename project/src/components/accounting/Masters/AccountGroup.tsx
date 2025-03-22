@@ -62,12 +62,12 @@ export default function AccountGroup() {
   };
 
   const handleDelete = () => {
-    alert("Delete function triggered!");
+    navigate("/Delete");
     setMenuOpen(false);
   };
 
   const handleView = () => {
-    alert("View function triggered!");
+    navigate("/View");
     setMenuOpen(false);
   };
 
