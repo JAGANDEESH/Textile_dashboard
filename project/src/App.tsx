@@ -10,9 +10,12 @@ import DelayedComponent from "./components/DelayedComponent";
 
 import Anavbar from "./components/accounting/Anavbar";
 import Asidebar from "./components/accounting/Asidebar";
-import Edit from "./components/accounting/Masters/Edit";
-import EditFormPage from "./components/accounting/Masters/EditFormPage";  // ✅ Import EditFormPage
-import AccountGroup from "./components/accounting/Masters/AccountGroup";
+import Edit from "./components/accounting/Masters/ACGroup/Edit";
+import EditFormPage from "./components/accounting/Masters/ACGroup/EditFormPage";  // ✅ Import EditFormPage
+import AccountGroup from "./components/accounting/Masters/ACGroup/AccountGroup";
+import AccountLedges from "./components/accounting/Masters/ACledges/AccountLedges";
+import LEdit from "./components/accounting/Masters/ACledges/LEdit";
+import LEditFormPage from "./components/accounting/Masters/ACledges/LEditFormPage";
 
 // Lazy-loaded components
 const Home = lazy(() => import("./components/Home"));
@@ -40,7 +43,40 @@ export default function App() {
             </Suspense>
           }
         />
+  <Route
+          path="/AccountLedges"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
 
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <AccountLedges/>
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/LEdit"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <LEdit/>
+              </div>
+            </div>
+          }
+        />
         {/* Edit Page (Fixed Navbar & Sidebar) */}
         <Route
           path="/Edit"
@@ -59,7 +95,23 @@ export default function App() {
             </div>
           }
         />
+   <Route
+          path="/Ledger-edit-form"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
 
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <LEditFormPage />
+              </div>
+            </div>
+          }
+        />
         {/* Edit Form Page (Fixed Navbar & Sidebar) */}
         <Route
           path="/edit-form"

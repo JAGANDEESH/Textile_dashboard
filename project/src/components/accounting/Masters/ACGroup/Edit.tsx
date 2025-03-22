@@ -31,14 +31,6 @@ export default function Edit() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<string>("");
-  const [selectedYear, setSelectedYear] = useState("2024-2025");
-
-  const yearOptions = [
-    "2023-2024",
-    "2024-2025",
-    "2025-2026",
-    "2026-2027",
-  ]; // Static for now, later can be fetched from backend
 
   const accountGroups: string[] = ["All", "Assets", "Liabilities", "Income", "Expenses"];
 
@@ -60,35 +52,19 @@ export default function Edit() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gray-100 p-6"
+      className="min-h-screen bg-gray-50 p-6 font-poppins"
     >
-      {/* Page Header with Year Selection */}
-      <div className="bg-white shadow-md rounded-lg p-5 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">
-          Manage Accounts
-        </h2>
-
-        {/* Year Dropdown */}
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-lg font-medium text-gray-700 bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-        >
-          {yearOptions.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+      {/* Page Header */}
+      <div className="bg-white shadow-md rounded-lg p-5">
+        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">Manage Accounts</h2>
+        
       </div>
 
       {/* Search & Filter */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row gap-4">
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="flex-1 relative bg-white shadow-md rounded-lg overflow-hidden"
-        >
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row gap-6">
+        {/* Search Bar */}
+        <motion.div whileHover={{ scale: 1.02 }} className="flex-1 relative bg-white shadow-md rounded-lg">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Search accounts..."
@@ -98,15 +74,13 @@ export default function Edit() {
           />
         </motion.div>
 
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          className="relative bg-white shadow-md rounded-lg overflow-hidden"
-        >
-          <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        {/* Filter Dropdown */}
+        <motion.div whileHover={{ scale: 1.02 }} className="relative bg-white shadow-md rounded-lg">
+          <Filter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
           <select
             value={selectedGroup}
             onChange={(e) => setSelectedGroup(e.target.value)}
-            className="pl-12 pr-8 py-2 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all appearance-none w-48"
+            className="pl-12 pr-8 py-2 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all appearance-none w-44"
           >
             {accountGroups.map((group) => (
               <option key={group} value={group}>
@@ -114,7 +88,7 @@ export default function Edit() {
               </option>
             ))}
           </select>
-          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+          <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
         </motion.div>
       </div>
 
@@ -129,35 +103,43 @@ export default function Edit() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-lg">
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Sub Group</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Group Name</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wide">Short Name</th>
+                <tr className="bg-blue-100 border-b border-gray-300">
+                  <th className="px-6 py-3 text-left text-lg font-bold text-gray-700 uppercase tracking-wide">
+                    Group Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-lg font-bold text-gray-700 uppercase tracking-wide">
+                    Parent
+                  </th>
+                  <th className="px-6 py-3 text-left text-lg font-bold text-gray-700 uppercase tracking-wide">
+                    Short Name
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-300">
                 {filteredData.length > 0 ? (
                   filteredData.map((item, index) => (
                     <motion.tr
                       key={index}
-                      whileHover={{ scale: 1.02 }}
-                      className="group hover:bg-blue-50 transition-all duration-150 cursor-pointer text-lg"
+                      whileHover={{ scale: 1.01 }}
+                      className="group hover:bg-blue-50 transition-all duration-150 cursor-pointer"
                       onClick={() => handleEdit(item)}
                     >
-                      <td className="px-6 py-3 whitespace-nowrap text-gray-900">{item.subGroup}</td>
+                      <td className="px-6 py-3 whitespace-nowrap text-lg text-gray-900">{item.subGroup}</td>
                       <td className="px-6 py-3">
-                        <span className={`inline-flex items-center px-4 py-1 rounded-full text-sm font-medium ${groupColors[item.group]}`}>
+                        <span className={`inline-flex items-center px-4 py-1 rounded-full text-md font-semibold ${groupColors[item.group]}`}>
                           {item.group}
                         </span>
                       </td>
                       <td className="px-6 py-3">
-                        <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono text-gray-800">{item.shortName}</code>
+                        <code className="px-3 py-1 bg-gray-200 rounded text-lg font-mono text-gray-800">{item.shortName}</code>
                       </td>
                     </motion.tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-lg text-gray-500">No matching records found</td>
+                    <td colSpan={3} className="px-6 py-6 text-center text-gray-600 text-lg font-medium">
+                      No matching records found
+                    </td>
                   </tr>
                 )}
               </tbody>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LoadingPage from "./LoadingPage";
 
-const DelayedComponent = ({ children }) => {
+const DelayedComponent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showComponent, setShowComponent] = useState(false);
 
   useEffect(() => {
