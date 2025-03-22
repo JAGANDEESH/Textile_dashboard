@@ -15,7 +15,7 @@ function Asidebar({ isOpen, className = "" }) {
     { title: "Masters", icon: <Users size={20} />, 
     submenu: [
       { title: "AC Group", onClick: () => navigate("/AccountGroup") },
-      { title: "AC Ledges", onClick: () => navigate("/AccountLedges") },
+      { title: "AC Ledges", onClick: () => navigate("/AccountLedger") },
     ],},
     {
       title: "Transactions",
