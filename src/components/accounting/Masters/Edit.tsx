@@ -135,7 +135,7 @@ export default function Edit() {
                   <th className="px-6 py-4 text-left">Short Name</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-300 text-lg">
+              <tbody className="divide-y divide-gray-300 text-md">
                 {filteredData.length > 0 ? (
                   filteredData.map((item, index) => (
                     <motion.tr
@@ -145,12 +145,12 @@ export default function Edit() {
                       onClick={() => handleEdit(item)}
                     >
         
+                      <td className="px-6 py-3 whitespace-nowrap text-gray-900">{item.subGroup}</td>
                       <td className="px-6 py-3">
-                        <span className={`inline-flex items-center px-4 py-1 rounded-full text-sm font-medium ${groupColors[item.group]}`}>
+                        <span className="inline-flex items-center px-4 py-1 rounded-full text-sm font-medium">
                           {item.group}
                         </span>                    
                       </td>
-                      <td className="px-6 py-3 whitespace-nowrap text-gray-900">{item.subGroup}</td>
                       <td className="px-6 py-3">
                         <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono text-gray-800">{item.shortName}</code>
                       </td>

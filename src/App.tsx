@@ -15,6 +15,7 @@ import EditFormPage from "./components/accounting/Masters/EditFormPage";  // ✅
 import AccountGroup from "./components/accounting/Masters/AccountGroup";
 import Delete from "./components/accounting/Masters/Delete";
 import View from "./components/accounting/Masters/View";
+import DeleteFormPage from "./components/accounting/Masters/DeleteFormPage";
 
 // Lazy-loaded components
 const Home = lazy(() => import("./components/Home"));
@@ -80,8 +81,8 @@ export default function App() {
             </div>
           }
         />
-
-<Route
+        
+        <Route
           path="/delete"
           element={
             <div className="min-h-screen bg-gray-100 flex">
@@ -94,6 +95,24 @@ export default function App() {
               {/* Main Content */}
               <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
                 <Delete />
+              </div>
+            </div>
+          }
+        />
+
+<Route
+          path="/delete-form"
+          element={
+            <div className="min-h-screen bg-gray-100 flex">
+              {/* Navbar Fixed at the Top */}
+              <Anavbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} className="fixed top-0 left-0 w-full z-30 bg-white shadow-md h-16" />
+
+              {/* Sidebar Fixed on the Left */}
+              <Asidebar isOpen={isSidebarOpen} />
+
+              {/* Main Content */}
+              <div className={`flex-1 transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"} pt-16 px-6`}>
+                <DeleteFormPage />
               </div>
             </div>
           }
