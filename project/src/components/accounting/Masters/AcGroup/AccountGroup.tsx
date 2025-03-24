@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { motion } from "framer-motion";
-import { Pencil, Trash2, Eye, PlusCircle } from "lucide-react";
+import { Eye, Pencil, PlusCircle, Trash2, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const accountGroups = [
@@ -13,77 +13,96 @@ const accountGroups = [
 
 const initialAccountSubGroups = {
   assets: [
-    { value: "cash", label: "Cash", children: [] },
-    { value: "accounts-receivable", label: "Accounts Receivable", children: [] },
+    { value: "cash", label: "Cash" },
+    { value: "accounts-receivable", label: "Accounts Receivable" },
   ],
   liabilities: [
-    { value: "loans", label: "Loans", children: [] },
-    { value: "accounts-payable", label: "Accounts Payable", children: [] },
+    { value: "loans", label: "Loans" },
+    { value: "accounts-payable", label: "Accounts Payable" },
   ],
 };
 
 export default function AccountGroup() {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [selectedSubGroup, setSelectedSubGroup] = useState(null);
-  const [nestedSubGroups, setNestedSubGroups] = useState([]);
-  const [customSubGroup, setCustomSubGroup] = useState("");
-  const [showCustomInput, setShowCustomInput] = useState(false);
   const [accountShortName, setAccountShortName] = useState("");
-  const [accounts, setAccounts] = useState([]);
   const [accountSubGroups, setAccountSubGroups] = useState(initialAccountSubGroups);
+  const [subGroupTree, setSubGroupTree] = useState(null); // Tree structure
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedAccounts = JSON.parse(localStorage.getItem("accounts")) || [];
-    setAccounts(storedAccounts);
+    const storedTree = JSON.parse(localStorage.getItem("subGroupTree")) || null;
+    setSubGroupTree(storedTree);
   }, []);
 
-  const handleAddAccount = () => {
-    if (!selectedGroup || (!selectedSubGroup && nestedSubGroups.length === 0 && !customSubGroup) || !accountShortName) {
-      alert("Please fill in all fields");
-      return;
+  useEffect(() => {
+    localStorage.setItem("subGroupTree", JSON.stringify(subGroupTree));
+  }, [subGroupTree]);
+
+  const addSubGroup = () => {
+    if (!selectedSubGroup) return;
+
+    const newNode = { value: selectedSubGroup.value, label: selectedSubGroup.label, child: null };
+
+    if (!subGroupTree) {
+      setSubGroupTree(newNode);
+    } else {
+      let current = subGroupTree;
+      while (current.child) {
+        current = current.child;
+      }
+      current.child = newNode;
+      setSubGroupTree({ ...subGroupTree });
     }
 
-    let newSubGroup = selectedSubGroup;
-    if (showCustomInput && customSubGroup) {
-      newSubGroup = { value: customSubGroup, label: customSubGroup, children: [] };
-      setAccountSubGroups((prev) => ({
-        ...prev,
-        [selectedGroup.value]: [...(prev[selectedGroup.value] || []), newSubGroup],
-      }));
-    }
-
-    const newAccounts = [
-      ...accounts,
-      {
-        group: selectedGroup,
-        subGroups: [newSubGroup, ...nestedSubGroups],
-        shortName: accountShortName,
-      },
-    ];
-
-    setAccounts(newAccounts);
-    localStorage.setItem("accounts", JSON.stringify(newAccounts));
-
-    // Reset state
     setSelectedSubGroup(null);
-    setCustomSubGroup("");
-    setShowCustomInput(false);
-    setAccountShortName("");
-    setNestedSubGroups([]);
   };
 
-  const handleAddNestedSubGroup = () => {
-    if (!selectedSubGroup && !customSubGroup) return;
-    
-    const newNestedSubGroup = customSubGroup
-      ? { value: customSubGroup, label: customSubGroup, children: [] }
-      : selectedSubGroup;
+  const removeSubGroup = (node, parent) => {
+    if (!node) return;
 
-    setNestedSubGroups((prev) => [...prev, newNestedSubGroup]);
-    setSelectedSubGroup(null);
-    setCustomSubGroup("");
-    setShowCustomInput(false);
+    if (parent === null) {
+      setSubGroupTree(null);
+    } else {
+      parent.child = null;
+      setSubGroupTree({ ...subGroupTree });
+    }
+  };
+
+  const renderSubGroups = (node, parent = null) => {
+    if (!node) return null;
+    return (
+      <div className="ml-6 border-l-2 pl-3 border-gray-400 relative">
+        <div className="text-gray-800 bg-white px-3 py-1 rounded-lg shadow-sm flex justify-between items-center">
+          {node.label}
+          <button type="button" onClick={() => removeSubGroup(node, parent)} className="text-red-500 hover:text-red-700 ml-2">
+            <XCircle size={20} />
+          </button>
+        </div>
+        {node.child && renderSubGroups(node.child, node)}
+      </div>
+    );
+  };
+
+  const handleAddAccount = () => {
+    if (!selectedGroup || !subGroupTree || !accountShortName) return;
+
+    const newAccount = {
+      group: selectedGroup,
+      subGroupTree,
+      shortName: accountShortName,
+    };
+
+    const storedAccounts = JSON.parse(localStorage.getItem("accounts")) || [];
+    storedAccounts.push(newAccount);
+    localStorage.setItem("accounts", JSON.stringify(storedAccounts));
+
+    // Reset form
+    setSelectedGroup(null);
+    setSubGroupTree(null);
+    setAccountShortName("");
+
+    navigate("/View");
   };
 
   return (
@@ -94,8 +113,7 @@ export default function AccountGroup() {
       className="min-h-screen flex items-center justify-center bg-gray-100 p-8"
     >
       <div className="bg-white shadow-xl p-10 rounded-2xl w-full max-w-lg border border-gray-300">
-        {/* Header with Action Buttons */}
-        <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-gray-900">🏦 Account Group</h2>
           <div className="flex space-x-6">
             {[
@@ -113,93 +131,63 @@ export default function AccountGroup() {
           </div>
         </div>
 
-        <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-          {/* Account Group */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Account Group</label>
-            <Select
-              options={accountGroups}
-              value={selectedGroup}
-              onChange={setSelectedGroup}
-              placeholder="Select Account Group..."
-              isSearchable
-              className="rounded-md"
-            />
-          </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Account Group</label>
+          <Select
+            options={accountGroups}
+            value={selectedGroup}
+            onChange={setSelectedGroup}
+            placeholder="Select Account Group..."
+            isSearchable
+            className="rounded-md"
+          />
+        </div>
 
-          {/* Account Sub Group */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Account Sub Group</label>
-            <div className="relative flex items-center">
-              <Select
-                options={selectedGroup ? accountSubGroups[selectedGroup.value] : []}
-                value={selectedSubGroup}
-                onChange={(option) => {
-                  setSelectedSubGroup(option);
-                  setShowCustomInput(option?.value === "other");
-                }}
-                placeholder="Select Account Sub Group..."
-                isSearchable
-                isDisabled={!selectedGroup}
-                className="rounded-md flex-1"
-              />
-              {(selectedSubGroup || showCustomInput) && (
-                <button
-                  type="button"
-                  onClick={handleAddNestedSubGroup}
-                  className="ml-3 text-blue-600 hover:text-blue-800"
-                >
-                  <PlusCircle size={24} />
-                </button>
-              )}
-            </div>
-            {showCustomInput && (
-              <input
-                type="text"
-                value={customSubGroup}
-                onChange={(e) => setCustomSubGroup(e.target.value)}
-                placeholder="Enter a custom sub group"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 mt-2"
-              />
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">Account Sub Group</label>
+          <div className="relative flex items-center">
+            <Select
+              options={selectedGroup ? accountSubGroups[selectedGroup.value] : []}
+              value={selectedSubGroup}
+              onChange={setSelectedSubGroup}
+              placeholder="Select Account Sub Group..."
+              isSearchable
+              isDisabled={!selectedGroup}
+              className="rounded-md flex-1"
+            />
+            {selectedSubGroup && (
+              <button type="button" onClick={addSubGroup} className="ml-3 text-blue-600 hover:text-blue-800">
+                <PlusCircle size={24} />
+              </button>
             )}
           </div>
+        </div>
 
-          {/* Display Nested Sub Groups */}
-          {nestedSubGroups.length > 0 && (
-            <div className="mt-4 p-3 border border-gray-300 rounded-lg bg-gray-50">
-              <h4 className="text-gray-700 font-medium mb-2">Nested Sub Groups:</h4>
-              {nestedSubGroups.map((sub, index) => (
-                <div key={index} className="text-gray-800 bg-white px-3 py-1 rounded-lg shadow-sm mb-1">
-                  {sub.label}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Account Short Name */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2">Account Short Name</label>
-            <input
-              type="text"
-              value={accountShortName}
-              onChange={(e) => setAccountShortName(e.target.value)}
-              placeholder="Enter Short Name"
-              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              required
-            />
+        {subGroupTree && (
+          <div className="mt-4 p-3 border border-gray-300 rounded-lg bg-gray-50">
+            <h4 className="text-gray-700 font-medium mb-2">Nested Sub Groups:</h4>
+            {renderSubGroups(subGroupTree)}
           </div>
+        )}
 
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={handleAddAccount}
-              className="px-6 bg-blue-600 text-white py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition duration-200 shadow-lg transform hover:scale-105 active:scale-95"
-            >
-              Add
-            </button>
-          </div>
-        </form>
+        <div className="mb-4 mt-4">
+          <label className="block text-gray-700 font-medium mb-2">Account Short Name</label>
+          <input
+            type="text"
+            value={accountShortName}
+            onChange={(e) => setAccountShortName(e.target.value)}
+            placeholder="Enter short name..."
+            className="w-full p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleAddAccount}
+          className="mt-4 px-6 bg-green-600 text-white py-3 rounded-md w-full"
+        >
+          Add Account
+        </button>
       </div>
     </motion.div>
   );
