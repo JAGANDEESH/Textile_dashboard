@@ -99,7 +99,7 @@ export default function EditFormPage() {
 
         <button
           onClick={handleUpdate}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition duration-200"
+          className="w-full bg-green-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-green-700 transition duration-200"
         >
           Update
         </button>

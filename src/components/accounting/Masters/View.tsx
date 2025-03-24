@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Search, Filter, ChevronDown, Trash2 } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { motion } from "framer-motion";
+import Select from "react-select";
+import DataTable from "react-data-table-component";
 
 interface Account {
   group: string;
@@ -27,31 +28,56 @@ const groupColors: Record<string, string> = {
   Expenses: "bg-amber-100 text-amber-800",
 };
 
+// Year Options
 const yearOptions = [
-    "2023-2024",
-    "2024-2025",
-    "2025-2026",
-    "2026-2027",
-  ]; 
+  { value: "2023-2024", label: "2023-2024" },
+  { value: "2024-2025", label: "2024-2025" },
+  { value: "2025-2026", label: "2025-2026" },
+  { value: "2026-2027", label: "2026-2027" },
+];
+
+// Account Group Options
+const accountGroupOptions = [
+  { value: "All", label: "All" },
+  { value: "Assets", label: "Assets" },
+  { value: "Liabilities", label: "Liabilities" },
+  { value: "Income", label: "Income" },
+  { value: "Expenses", label: "Expenses" },
+];
 
 export default function View() {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
-  const [selectedYear, setSelectedYear] = useState("2024-2025");
-  const [accounts, setAccounts] = useState<Account[]>(initialData);
-
-  const accountGroups: string[] = ["All", "Assets", "Liabilities", "Income", "Expenses"];
+  const [selectedYear, setSelectedYear] = useState(yearOptions[1]); // Default to 2024-2025
+  const [accounts] = useState<Account[]>(initialData);
 
   const filteredData = accounts.filter((item) => {
     return (
-      (selectedGroup === "All" || selectedGroup === "" || item.group === selectedGroup) &&
+      (selectedGroup === "All" || item.group === selectedGroup) &&
       (item.group.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.subGroup.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.shortName.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   });
 
+  const columns = [
+    {
+      name: "Sub Group",
+      selector: (row: Account) => row.subGroup,
+      sortable: true,
+    },
+    {
+      name: "Group Name",
+      selector: (row: Account) => row.group,
+      sortable: true,
+    },
+    {
+      name: "Short Name",
+      selector: (row: Account) => row.shortName,
+      sortable: true,
+      center: true,
+    },
+  ];
 
   return (
     <motion.div
@@ -60,107 +86,91 @@ export default function View() {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gray-100 p-6"
     >
+      {/* Page Header with Year Selection */}
       <div className="bg-white shadow-md rounded-lg p-5 flex items-center justify-between">
-        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">
-          View Accounts
-        </h2>
+        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">View Accounts</h2>
 
         {/* Year Dropdown */}
-        <select
+        <Select
           value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg text-lg font-medium text-gray-700 bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
-        >
-          {yearOptions.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+          onChange={(selectedOption) => setSelectedYear(selectedOption)}
+          options={yearOptions}
+          className="w-64"
+          styles={{
+            control: (provided) => ({
+              ...provided,
+              padding: "5px",
+              borderRadius: "8px",
+              borderColor: "#D1D5DB",
+              boxShadow: "none",
+              "&:hover": { borderColor: "#3B82F6" },
+            }),
+          }}
+          menuPortalTarget={document.body}
+        />
       </div>
 
+      {/* Search & Filter */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row gap-4">
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="flex-1 relative bg-white shadow-md rounded-lg overflow-hidden"
-              >
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search accounts..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-3 py-2 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-                />
-              </motion.div>
-      
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                className="relative bg-white shadow-md rounded-lg overflow-hidden"
-              >
-                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <select
-                  value={selectedGroup}
-                  onChange={(e) => setSelectedGroup(e.target.value)}
-                  className="pl-12 pr-8 py-2 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all appearance-none w-48"
-                >
-                  {accountGroups.map((group) => (
-                    <option key={group} value={group}>
-                      {group}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-              </motion.div>
-            </div>
+        {/* Search Box */}
+        <motion.div whileHover={{ scale: 1.02 }} className="flex-1 relative bg-white shadow-md rounded-lg">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search accounts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-3 py-2 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
+        </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Account Group Dropdown */}
+        <Select
+          value={accountGroupOptions.find((option) => option.value === selectedGroup)}
+          onChange={(selectedOption) => setSelectedGroup(selectedOption?.value || "All")}
+          options={accountGroupOptions}
+          className="w-64"
+          styles={{
+            control: (prevState) => ({
+              ...prevState,
+              padding: "5px",
+              borderRadius: "8px",
+              borderColor: "#D1D5DB",
+              boxShadow: "none",
+              "&:hover": { borderColor: "#3B82F6" },
+            }),
+            menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          }}
+          menuPortalTarget={document.body}
+        />
+      </div>
+
+      {/* DataTable */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6"  style={{ overflow: "visible" }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
           className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden"
         >
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-lg">
-                  <th className="px-6 py-4 text-left font-bold text-gray-600">Sub Group</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600">Group Name</th>
-                  <th className="px-6 py-4 text-left font-bold text-gray-600">Short Name</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-  {filteredData.length > 0 ? (
-    filteredData.map((item, index) => (
-      <tr
-        key={index}
-        className="group text-lg"
-      >
-        <td className="px-6 py-3 text-gray-900">{item.subGroup}</td>
-        <td className="px-6 py-3">
-          <span className={`inline-flex items-center px-4 py-1 rounded-full text-sm font-medium ${groupColors[item.group]}`}>
-            {item.group}
-          </span>
-        </td>
-        <td className="px-6 py-3">
-          <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono text-gray-800">
-            {item.shortName}
-          </code>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan={4} className="px-6 py-8 text-center text-lg text-gray-500">
-        No matching records found
-      </td>
-    </tr>
-  )}
-</tbody>
-
-            </table>
-          </div>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            pagination
+            highlightOnHover
+            striped
+            responsive
+            customStyles={{
+              headCells: {
+                style: {
+                  // fontSize: "18px",
+                  fontWeight: "bold",
+                  backgroundColor: "#3B82F6",
+                  color: "white",
+                },
+              },
+            }}
+          />
         </motion.div>
       </div>
     </motion.div>

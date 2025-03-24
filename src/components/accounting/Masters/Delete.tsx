@@ -68,6 +68,11 @@ export default function Delete() {
   const columns = [
     {
       name: "Group Name",
+      selector: (row: Account) => row.subGroup,
+      sortable: true,
+    },
+    {
+      name: "Parent",
       selector: (row: Account) => row.group,
       cell: (row: Account) => (
           row.group
@@ -75,17 +80,10 @@ export default function Delete() {
       sortable: true,
     },
     {
-      name: "Parent",
-      selector: (row: Account) => row.subGroup,
-      sortable: true,
-    },
-    {
       name: "Short Name",
       selector: (row: Account) => row.shortName,
       cell: (row: Account) => (
-        <code className="px-3 py-1 bg-gray-100 rounded text-sm font-mono text-gray-800">
-          {row.shortName}
-        </code>
+          row.shortName
       ),
       sortable: true,
     },
