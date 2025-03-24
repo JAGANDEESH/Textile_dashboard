@@ -65,7 +65,7 @@ export default function Edit() {
       {/* Page Header with Year Selection */}
       <div className="bg-white shadow-md rounded-lg p-5 flex items-center justify-between">
         <h2 className="text-3xl font-bold text-gray-900 tracking-wide">
-          Manage Accounts
+          Manage Accounts Group
         </h2>
 
         {/* Year Dropdown */}

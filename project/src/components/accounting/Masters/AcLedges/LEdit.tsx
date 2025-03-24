@@ -53,7 +53,7 @@ export default function LEdit() {
       className="min-h-screen bg-gray-50 p-6 font-poppins"
     >
       <div className="bg-white shadow-md rounded-lg p-5">
-        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">Manage Accounts</h2>
+        <h2 className="text-3xl font-bold text-gray-900 tracking-wide">Manage Accounts Ledger</h2>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row gap-6">

@@ -26,7 +26,7 @@ function Asidebar({ isOpen, className = "" }) {
       ],
      
     },
-    { title: "View", icon: <Eye size={20} />, submenu: [] },
+    { title: "View", icon: <Eye size={20} /> },
     {
       title: "Reports",
       icon: <FileText size={20} />,
